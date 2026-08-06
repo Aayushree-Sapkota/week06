@@ -6,8 +6,7 @@ In this example, you will provision the Azure infrastructure required to deploy 
 
 Instead of manually creating Azure resources through the Azure Portal or Azure CLI, you will define the infrastructure as code and allow Terraform to provision the required resources automatically.
 
-After the infrastructure has been created successfully, you will deploy the application by following the instructions provided in **Week 05 – Example 2**.
-
+After the infrastructure has been created successfully, you will deploy the application by following a similar process to that used in __Week 05 – Example 2__.
 
 ## Learning Outcomes
 
@@ -83,8 +82,9 @@ At a minimum, update the following variables:
 
 ## Provision Azure Infrastructure
 
-### Step 1: Initializa, Plan and Apply Terraform
-Initialize, Plan and Apply Terraform configuration files as demonstrated in Seminar. 
+### Step 1: Initialize, Plan and Apply Terraform
+
+Initialize the Terraform working directory, review the execution plan, and apply the configuration as demonstrated in the seminar. 
 
 Terraform will create:
 
@@ -92,7 +92,7 @@ Terraform will create:
 - Azure Kubernetes Service (AKS)
 - Azure Container Registry (ACR)
 - Azure Storage Account
-- Blob Storage container:
+- Two Blob Storage containers:
   - `student-profile-photo`
   - `lecturer-profile-photo`
 - Required role assignments between AKS and ACR
@@ -102,16 +102,56 @@ Terraform will create:
 Verify that all Azure resources have been created successfully using either:
 
 - Azure Portal
-- Azure CLI
+- Azure CLI, i.e., using the command:
+
+  ```bash
+  az resource list \
+    --resource-group <resource-group-name> \
+    -o table
+  ```
 
 ## Deploy the Application
 
-Once the infrastructure has been created successfully, deploy the application by following the instructions provided in:
+Once the infrastructure has been created successfully, deploy the application using a modified version of the process from __Week 05 – Example 2__.
 
-> **Week 05 – Example 2: Deploying a Microservices Application to Azure Kubernetes Service (AKS)**
+Before starting the deployment:
 
-Reuse the existing Kubernetes manifests and deployment process from Week 05.
+1. Create and populate the `.env` files in the `student-service` and `lecturer-service` directories with the `AZURE_STORAGE_CONNECTION_STRING` value.
+
+    The connection string can be obtained from the Azure Portal or by using the command:
+    
+    ```bash
+    az storage account show-connection-string \
+      --name <storage-account-name> \
+      --resource-group <resource-group-name> \
+      --query connectionString \
+      --output tsv
+    ```
+2. Build the Docker images for each service.
+
+3. Tag and push the images to the Azure Container Registry (ACR) created by Terraform.
+ 
+4. In the `./kubernetes` directory, update the _Kubernetes deployment manifests_ for both: 
+    * The _application secret_ for the `AZURE_STORAGE_CONNECTION_STRING` field; and
+    * The _container repository_ references so they point to your Azure Container Registry (i.e., the `<azure-container-registry-url>` field).
+ 
+5. Deploy the application using the process described in __Week 05 – Example 2__.
+
 
 ## Cleaning Up Azure Resources
 
-When you have finished the practical, destroy all Azure resources created by Terraform.
+When you have finished the practical, attempt to destroy all Azure resources created by Terraform:
+
+```bash
+terraform destroy
+```
+
+Review the execution plan and type "_yes_" when prompted.
+
+> __NOTE on CloudLabs Limitation__: Terraform may report errors when destroying Azure role assignments because student accounts do not have permission to delete RBAC assignments. This does not necessarily indicate that the deployment failed. Verify resource cleanup using the Azure Portal or `az resource list`. If you experience this, try removing the resource from the Terraform State __before__ destroy:
+> ```bash
+> terraform state rm azurerm_role_assignment.acr_pull
+> 
+> terraform destroy
+> ```
+> Terraform will no longer attempt to delete the role assignment. The role assignment will be automatically removed when the _AKS cluster_ is deleted. 
