@@ -6,7 +6,6 @@
 *.tfstate.*
 
 # Terraform variable files may contain sensitive values
-terraform.tfvars
 *.auto.tfvars
 
 # Terraform plan files
