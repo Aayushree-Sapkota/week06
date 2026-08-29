@@ -1,0 +1,58 @@
+name: End-to-End Build and Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Terraform Apply
+      id: tf
+      run: |
+        cd terraform
+        terraform init
+        terraform apply -auto-approve -var="image_tag=${GITHUB_SHA::7}"
+        echo "ACR_SERVER=$(terraform output -raw container_registry_login_server)" >> $GITHUB_ENV
+        echo "RG_NAME=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
+        echo "AKS_NAME=$(terraform output -raw kubernetes_cluster_name)" >> $GITHUB_ENV
+
+    - name: Log in to ACR
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.ACR_SERVER }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Build & Push Docker Compose Images
+      run: |
+        export CONTAINER_REGISTRY=${{ env.ACR_SERVER }}
+        export BOOK_CATALOG_IMAGE="book-catalog"
+        export INVENTORY_MANAGEMENT_IMAGE="inventory-management"
+        export VERSION=${GITHUB_SHA::7}
+
+        docker compose build
+        docker compose push
+
+    - name: Get AKS Credentials & Deploy to K8s
+      run: |
+        az aks get-credentials --resource-group ${{ env.RG_NAME }} --name ${{ env.AKS_NAME }} --overwrite-existing
+        # Extract ACR URL from Terraform
+        ACR_URL=$(cd terraform && terraform output -raw container_registry_login_server)
+
+        # Replace placeholder across all 13 manifest files at once
+        sed -i "s|<azure-container-registry-url>|${ACR_URL}|g" kubernetes/*.yaml
+        kubectl apply -f example-1/kubernetes/
