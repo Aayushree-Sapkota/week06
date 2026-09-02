@@ -33,7 +33,7 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ./user-service/.env
+      - ./user-service/.env.test
     depends_on:
       user-db:
         condition: service_healthy
@@ -75,7 +75,7 @@ services:
     ports:
       - "8001:8000"
     env_file:
-      - ./student-service/.env
+      - ./student-service/.env.test
     depends_on:
       student-db:
         condition: service_healthy
@@ -117,7 +117,7 @@ services:
     ports:
       - "8002:8000"
     env_file:
-      - ./lecturer-service/.env
+      - ./lecturer-service/.env.test
     depends_on:
       lecturer-db:
         condition: service_healthy
@@ -159,7 +159,7 @@ services:
     ports:
       - "8003:8000"
     env_file:
-      - ./course-service/.env
+      - ./course-service/.env.test
     depends_on:
       course-db:
         condition: service_healthy
@@ -201,7 +201,7 @@ services:
     ports:
       - "8004:8000"
     env_file:
-      - ./enrollment-service/.env
+      - ./enrollment-service/.env.test
     depends_on:
       enrollment-db:
         condition: service_healthy
