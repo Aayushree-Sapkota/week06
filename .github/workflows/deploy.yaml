@@ -44,10 +44,11 @@ jobs:
         docker compose push
 
     - name: Get AKS Credentials & Deploy to K8s
+      working-directory: example-1
       run: |
         az aks get-credentials --resource-group ${{ env.RG_NAME }} --name ${{ env.AKS_NAME }} --overwrite-existing
         # Extract ACR URL from Terraform
-        ACR_URL=$(cd terraform && terraform output -raw container_registry_login_server)
+        ACR_URL=$(cd terraform && terraform output -raw acr_login_server)
 
         # Replace placeholder across all 13 manifest files at once
         sed -i "s|<azure-container-registry-url>|${ACR_URL}|g" kubernetes/*.yaml
