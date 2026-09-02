@@ -195,7 +195,7 @@ services:
     build:
       context: ./enrollment-service
       dockerfile: Dockerfile
-    image: ${CONTAINER_REGISTRY}/koalatech-enrollment-service::${VERSION} 
+    image: ${CONTAINER_REGISTRY}/koalatech-enrollment-service:${VERSION} 
     container_name: enrollment-service
     restart: unless-stopped
     ports:
