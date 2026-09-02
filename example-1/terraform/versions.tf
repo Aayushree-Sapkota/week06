@@ -7,16 +7,17 @@ terraform {
             version = "~> 4.0"
         }
     }
+
+    # REMOTE STATE BACKEND
+    backend "azurerm" {
+        resource_group_name = "tfstate-rg"
+        storage_account_name = "tfstate20245" 
+        container_name = "tfstate"
+        key = "koalatech.tfstate"
+  }
+
 }
 
 provider "azurerm" {
     features {}
 }
-
-# REMOTE STATE BACKEND
-  backend "azurerm" {
-    resource_group_name  = "tfstate-rg"
-    storage_account_name = "tfstate20245" 
-    container_name       = "tfstate"
-    key                  = "koalatech.tfstate"
-  }
