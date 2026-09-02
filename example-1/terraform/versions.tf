@@ -12,3 +12,11 @@ terraform {
 provider "azurerm" {
     features {}
 }
+
+# REMOTE STATE BACKEND
+  backend "azurerm" {
+    resource_group_name  = "tfstate-rg"
+    storage_account_name = "tfstate20245" 
+    container_name       = "tfstate"
+    key                  = "koalatech.tfstate"
+  }
