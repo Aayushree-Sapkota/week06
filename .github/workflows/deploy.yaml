@@ -26,9 +26,9 @@ jobs:
       run: |
         terraform init
         terraform apply -auto-approve -var="image_tag=${GITHUB_SHA::7}"
-        echo "ACR_SERVER=$(terraform output -raw container_registry_login_server)" >> $GITHUB_ENV
+        echo "ACR_SERVER=$(terraform output -raw acr_login_server)" >> $GITHUB_ENV
         echo "RG_NAME=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
-        echo "AKS_NAME=$(terraform output -raw kubernetes_cluster_name)" >> $GITHUB_ENV
+        echo "AKS_NAME=$(terraform output -raw aks_cluster_name)" >> $GITHUB_ENV
 
     - name: Log in to ACR
       run: |
