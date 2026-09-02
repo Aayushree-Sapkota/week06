@@ -4,7 +4,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    image: koalatech-frontend:v1
+    image: ${CONTAINER_REGISTRY}/koalatech-frontend:${VERSION}
     container_name: koalatech-frontend
     ports:
       - "3000:80"
@@ -27,7 +27,7 @@ services:
     build:
       context: ./user-service
       dockerfile: Dockerfile
-    image: koalatech-user-service:v1
+    image: ${CONTAINER_REGISTRY}/koalatech-user-service:${VERSION} 
     container_name: user-service
     restart: unless-stopped
     ports:
@@ -69,7 +69,7 @@ services:
     build:
       context: ./student-service
       dockerfile: Dockerfile
-    image: koalatech-student-service:v1
+    image: ${CONTAINER_REGISTRY}/koalatech-student-service:${VERSION} 
     container_name: student-service
     restart: unless-stopped
     ports:
@@ -111,7 +111,7 @@ services:
     build:
       context: ./lecturer-service
       dockerfile: Dockerfile
-    image: koalatech-lecturer-service:v1
+    image: ${CONTAINER_REGISTRY}/koalatech-lecturer-service:${VERSION}
     container_name: lecturer-service
     restart: unless-stopped
     ports:
@@ -153,7 +153,7 @@ services:
     build:
       context: ./course-service
       dockerfile: Dockerfile
-    image: koalatech-course-service:v1
+    image: ${CONTAINER_REGISTRY}/koalatech-course-service:${VERSION}
     container_name: course-service
     restart: unless-stopped
     ports:
@@ -195,7 +195,7 @@ services:
     build:
       context: ./enrollment-service
       dockerfile: Dockerfile
-    image: koalatech-enrollment-service:v1
+    image: ${CONTAINER_REGISTRY}/koalatech-enrollment-service::${VERSION} 
     container_name: enrollment-service
     restart: unless-stopped
     ports:

@@ -37,8 +37,6 @@ jobs:
     - name: Build & Push Docker Compose Images
       run: |
         export CONTAINER_REGISTRY=${{ env.ACR_SERVER }}
-        export BOOK_CATALOG_IMAGE="book-catalog"
-        export INVENTORY_MANAGEMENT_IMAGE="inventory-management"
         export VERSION=${GITHUB_SHA::7}
 
         docker compose build
