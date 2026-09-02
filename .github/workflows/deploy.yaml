@@ -34,7 +34,7 @@ jobs:
       run: |
         az acr login --name ${{ env.ACR_SERVER }}
 
-    - name: Build & Push Docker Compose Images
+    - name: Build & Push Docker Compose Imagess
       run: |
         export CONTAINER_REGISTRY=${{ env.ACR_SERVER }}
         export VERSION=${GITHUB_SHA::7}
