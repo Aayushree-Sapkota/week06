@@ -52,4 +52,4 @@ jobs:
 
         # Replace placeholder across all 13 manifest files at once
         sed -i "s|<azure-container-registry-url>|${ACR_URL}|g" kubernetes/*.yaml
-        kubectl apply -f example-1/kubernetes/
+        kubectl apply -f kubernetes/
